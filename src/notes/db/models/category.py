@@ -10,8 +10,8 @@ from notes.core.db import Base
 note_category_association = Table(
     "note_category_association",
     Base.metadata,
-    Column("note_id", Integer, ForeignKey("notes.id", ondelete="CASCADE"), primary_key=True),
-    Column("category_id", Integer, ForeignKey("categories.id", ondelete="CASCADE"), primary_key=True),
+    Column("note_id", Integer, ForeignKey("note.id", ondelete="CASCADE"), primary_key=True),
+    Column("category_id", Integer, ForeignKey("category.id", ondelete="CASCADE"), primary_key=True),
 )
 
 
