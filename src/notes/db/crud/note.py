@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -19,8 +20,25 @@ class CRUDNote(CRUDBase):
         await session.flush()
 
         if category_ids:
+            # Получаем id реально существующих категорий
+            existing_ids = await session.execute(
+                select(Category.id).where(Category.id.in_(category_ids))
+            )
+            existing_ids = set(existing_ids.scalars().all())
+
+            # Если что-то не найдено → ошибка
+            missing_ids = set(category_ids) - existing_ids
+            if missing_ids:
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"Категории не найдены: {sorted(missing_ids)}"
+                )
+
             stmt = insert(note_category_association).values(
-                [{"note_id": note.id, "category_id": cat_id} for cat_id in category_ids]
+                [
+                    {"note_id": note.id, "category_id": cat_id}
+                    for cat_id in category_ids
+                ]
             )
             await session.execute(stmt)
 

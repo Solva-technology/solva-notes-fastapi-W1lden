@@ -23,3 +23,16 @@ class NoteDB(NoteCreate):
 
     class Config:
         from_attributes = True
+
+
+class NoteRead(BaseModel):
+    id: int
+    title: str
+    text: Optional[str]
+    created_at: datetime
+    updated_at: datetime
+    categories: List[CategoryDB] = []
+    category_ids: List[int] = []
+
+    class Config:
+        from_attributes = True
