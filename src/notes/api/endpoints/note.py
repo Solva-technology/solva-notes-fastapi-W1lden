@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from fastapi.params import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -10,15 +10,46 @@ from notes.db.crud.note import note_crud
 router = APIRouter()
 
 
-@router.post(
-    '/',
-    response_model=NoteDB
-)
+@router.post('/', response_model=NoteDB)
 async def create_new_note(
     new_note: NoteCreate,
     session: AsyncSession = Depends(get_async_session),
 ):
-    return await note_crud.create(new_note, session)
+    note = await note_crud.create_with_categories(
+        obj_in=new_note.dict(exclude={"category_ids"}),
+        category_ids=new_note.category_ids,
+        session=session,
+    )
+
+    # note — уже загружен с категориями (через selectinload в CRUD)
+    if note is None:
+        raise HTTPException(
+            status_code=500,
+            detail="Не удалось создать заметку."
+        )
+
+    categories = [
+        {
+            "id": c.id,
+            "name": c.name,
+            "created_at": c.created_at,
+            "updated_at": c.updated_at,
+        }
+        for c in getattr(note, "categories", []) or []
+    ]
+
+    response = {
+        "id": note.id,
+        "title": note.title,
+        "text": note.text,
+        "created_at": note.created_at,
+        "updated_at": note.updated_at,
+        # соответствие полям NoteDB: categories (объекты) и category_ids (список id)
+        "categories": categories,
+        "category_ids": [c["id"] for c in categories],
+    }
+
+    return response
 
 
 @router.get(

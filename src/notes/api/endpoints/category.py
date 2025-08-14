@@ -2,9 +2,9 @@ from fastapi import APIRouter
 from fastapi.params import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from notes.core.db import get_async_session
 from notes.api.validators import check_category_exist
 from notes.api.schemas.category import CategoryCreate, CategoryDB
-from notes.core.db import get_async_session
 from notes.db.crud.category import category_crud
 
 router = APIRouter()
