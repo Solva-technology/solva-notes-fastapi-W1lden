@@ -19,7 +19,7 @@ class CRUDNote(CRUDBase):
         session.add(note)
         await session.flush()
 
-        if category_ids:
+        if category_ids is not None and len(category_ids) > 0:
             # Получаем id реально существующих категорий
             existing_ids = await session.execute(
                 select(Category.id).where(Category.id.in_(category_ids))
@@ -53,6 +53,35 @@ class CRUDNote(CRUDBase):
         note_with_categories = note_with_categories.scalars().first()
 
         return note_with_categories
+
+    async def get_multi_filtered(
+            self,
+            session: AsyncSession,
+            user
+    ):
+        # stmt = select(self.model)
+        stmt = select(self.model).options(selectinload(self.model.categories))
+        if not user.is_admin:
+            stmt = stmt.where(self.model.user_id == user.id)
+        result = await session.execute(stmt)
+        return result.scalars().all()
+
+    async def get_by_id_filtered(
+            self,
+            note_id: int,
+            session: AsyncSession,
+            user
+    ):
+        # stmt = select(self.model).where(self.model.id == note_id)
+        stmt = (
+            select(self.model)
+            .where(self.model.id == note_id)
+            .options(selectinload(self.model.categories))
+        )
+        if not user.is_admin:
+            stmt = stmt.where(self.model.user_id == user.id)
+        result = await session.execute(stmt)
+        return result.scalars().first()
 
 
 note_crud = CRUDNote(Note)

@@ -9,7 +9,8 @@ from notes.db.crud.note import note_crud
 
 async def check_note_exist(
     note_id: int,
-    session: AsyncSession
+    session: AsyncSession,
+    user
 ):
     note = await note_crud.get(note_id, session)
     if note is None:
@@ -17,6 +18,13 @@ async def check_note_exist(
             status_code=HTTPStatus.NOT_FOUND,
             detail='Заметка не найдена!'
         )
+
+    if (not user.is_admin) and (note.user_id != user.id):
+        raise HTTPException(
+            status_code=HTTPStatus.FORBIDDEN,
+            detail='Нет доступа к этой заметке'
+        )
+
     return note
 
 

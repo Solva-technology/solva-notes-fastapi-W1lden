@@ -3,6 +3,7 @@ from fastapi.params import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from notes.core.db import get_async_session
+from notes.core.user import is_admin
 from notes.api.validators import check_category_exist
 from notes.api.schemas.category import CategoryCreate, CategoryDB
 from notes.db.crud.category import category_crud
@@ -12,7 +13,8 @@ router = APIRouter()
 
 @router.post(
     '/',
-    response_model=CategoryDB
+    response_model=CategoryDB,
+    dependencies=[Depends(is_admin)]
 )
 async def create_new_category(
     new_category: CategoryCreate,

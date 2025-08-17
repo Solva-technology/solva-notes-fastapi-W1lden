@@ -1,6 +1,6 @@
 from typing import Union
 
-from fastapi import Depends
+from fastapi import Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi_users import (
     FastAPIUsers, BaseUserManager, IntegerIDMixin, InvalidPasswordException
@@ -55,6 +55,7 @@ class UserManager(IntegerIDMixin, BaseUserManager):
 async def get_user_manager(user_db=Depends(get_user_db)):
     yield UserManager(user_db)
 
+
 fastapi_users = FastAPIUsers(
     get_user_manager,
     [auth_backend],
@@ -62,3 +63,12 @@ fastapi_users = FastAPIUsers(
 
 current_user = fastapi_users.current_user(active=True)
 current_superuser = fastapi_users.current_user(active=True, superuser=True)
+
+
+async def is_admin(user=Depends(current_user)):
+    if not user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail='Требуются права администратора'
+        )
+    return user

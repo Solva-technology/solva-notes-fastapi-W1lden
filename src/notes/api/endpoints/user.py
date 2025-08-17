@@ -1,6 +1,6 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
-from notes.core.user import auth_backend, fastapi_users
+from notes.core.user import auth_backend, fastapi_users, is_admin
 from notes.api.schemas.user import UserCreate, UserRead, UserUpdate
 
 router = APIRouter()
@@ -27,4 +27,5 @@ router.include_router(
     users_router,
     prefix='/users',
     tags=['users'],
+    dependencies=[Depends(is_admin)]
 )
