@@ -24,3 +24,9 @@ class NoteDB(NoteBase):
 
     class Config:
         from_attributes = True
+
+
+class NoteUpdate(BaseModel):
+    title: Optional[str] = Field(None, max_length=TITLE_MAX_LEN)
+    text: Optional[str] = None
+    category_ids: Optional[list[int]] = None
