@@ -1,30 +1,3 @@
-# from sqladmin.authentication import AuthenticationBackend
-# from starlette.requests import Request
-
-# from notes.core.user import current_user
-# from notes.db.models import User
-
-
-# class AdminAuth(AuthenticationBackend):
-#     async def login(self, request: Request) -> bool:
-#         # SQLAdmin требует переопределить, но мы логинимся через FastAPI Users
-#         return True
-
-#     async def logout(self, request: Request) -> bool:
-#         return True
-
-#     async def authenticate(self, request: Request) -> User | None:
-#         try:
-#             user = await current_user(request)
-#         except Exception:
-#             return None
-
-#         if user and user.is_admin:
-#             return user
-#         return None
-
-
-# notes/admin/auth.py
 from sqladmin.authentication import AuthenticationBackend
 from starlette.requests import Request
 
