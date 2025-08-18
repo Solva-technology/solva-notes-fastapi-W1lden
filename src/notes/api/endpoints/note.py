@@ -28,6 +28,7 @@ async def create_new_note(
         session=session
     )
 
+
 # PATCH
 @router.patch(
     "/{id}/update",
@@ -86,7 +87,7 @@ async def get_note_by_id(
 # DELETE
 @router.delete(
     "/{id}/delete",
-    status_code=200
+    status_code=204
 )
 async def delete_note(
     id: int,

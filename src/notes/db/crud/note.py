@@ -133,5 +133,4 @@ class CRUDNote(CRUDBase):
         return note_with_categories.scalars().first()
 
 
-
 note_crud = CRUDNote(Note)

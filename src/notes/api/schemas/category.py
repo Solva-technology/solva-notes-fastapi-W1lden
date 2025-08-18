@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -16,3 +17,7 @@ class CategoryDB(CategoryCreate):
 
     class Config:
         from_attributes = True
+
+
+class CategoryUpdate(BaseModel):
+    name: Optional[str] = None
