@@ -135,7 +135,7 @@ http://0.0.0.0:8000/admin/
 - GET /category/{id} - посмотреть категорию по id;
 - PATCH /category/{id}/update - обновить категорию по id;
 - DELETE /category/{id} - удалить категорию по id;
-- POST /note/ - создать категорию;
+- POST /note/ - создать заметку;
 - GET /note/all - посмотреть все свои заметки;
 - GET /note/{id} - посмотреть заметку по id;
 - PATCH /note/{id}/update - обновить заметку по id;
