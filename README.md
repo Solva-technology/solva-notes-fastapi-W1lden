@@ -1,74 +1,147 @@
-[![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-2e0aaae1b6195c2367325f4f02e2d04e9abb55f0b24a779b69b11b9e10269abc.svg)](https://classroom.github.com/online_ide?assignment_repo_id=20062611&assignment_repo_type=AssignmentRepo)
-# Note App
+# 📝 NoteHub - проект удобных заметок
 
-## Техническое задание
-
-Необходимо разработать CRUD-приложение **Note App** на базе **FastAPI**, в котором реализован функционал для работы с заметками пользователей. Все данные должны храниться в базе данных **PostgreSQL**. 
-
-Приложение должно быть упаковано в **Docker** и запускаться с помощью `docker-compose`.
+Этот проект позволяет создавать, писать, и удалять заметки. Так же есть возможность задавать им категории, чтобы фильтровать их, тем самым повысить вашу продуктивность и организованность!
 
 ---
 
-## Технологический стек
+## 🧱 Стек технологий
 
-- Python + FastAPI
+- Python
+- FastAPI
+- Alembic
+- SQLAlchemy
 - PostgreSQL
-- Alembic (для миграций)
-- SQLAdmin (админка)
 - Docker + Docker Compose
 
 ---
 
-## Модели данных
+## 🗂 Структура проекта
 
-Приложение должно содержать следующие сущности:
-
-- **User** – пользователь (аутентификация, авторизация).
-- **Category** – категории заметок.
-- **Note** – заметки.
+```
+solva-notes-fastapi-W1lden/
+├─ src/
+│  ├─ migrations/
+│  │  ├─ versions/
+│  │  │  ├─ 6906504e637d_add_category_model.py
+│  │  │  ├─ 81667a168fa3_add_relationship_between_user_and_note.py
+│  │  │  └─ 98967379f929_add_is_admin_to_user.py
+│  │  ├─ env.py
+│  │  ├─ README
+│  │  └─ script.py.mako
+│  ├─ notes/
+│  │  ├─ admin/
+│  │  │  ├─ __init__.py
+│  │  │  ├─ auth.py
+│  │  │  └─ views.py
+│  │  ├─ api/
+│  │  │  ├─ endpoints/
+│  │  │  │  ├─ __init__.py
+│  │  │  │  ├─ category.py
+│  │  │  │  ├─ note.py
+│  │  │  │  └─ user.py
+│  │  │  ├─ schemas/
+│  │  │  │  ├─ __init__.py
+│  │  │  │  ├─ category.py
+│  │  │  │  ├─ note.py
+│  │  │  │  └─ user.py
+│  │  │  ├─ __init__.py
+│  │  │  ├─ routers.py
+│  │  │  └─ validators.py
+│  │  ├─ core/
+│  │  │  ├─ __init__.py
+│  │  │  ├─ base.py
+│  │  │  ├─ config.py
+│  │  │  ├─ constants.py
+│  │  │  ├─ db.py
+│  │  │  └─ user.py
+│  │  ├─ db/
+│  │  │  ├─ crud/
+│  │  │  │  ├─ __init__.py
+│  │  │  │  ├─ base.py
+│  │  │  │  ├─ category.py
+│  │  │  │  └─ note.py
+│  │  │  ├─ models/
+│  │  │  │  ├─ __init__.py
+│  │  │  │  ├─ category.py
+│  │  │  │  ├─ note.py
+│  │  │  │  └─ user.py
+│  │  │  └─ __init__.py
+│  │  ├─ __init__.py
+│  │  └─ main.py
+│  ├─ .env
+│  ├─ alembic.ini
+│  ├─ Dockerfile
+│  └─ requirements.txt
+├─ .gitignore
+├─ docker-compose.yml
+└─ README.md
+```
 
 ---
 
-## Требования к функциональности
+## 🚀 Запуск проекта
 
-### Пользователи:
-- Регистрация и вход в систему.
-- Пользователь **может выполнять CRUD только над своими заметками**.
-- Пользователь **может видеть только свои заметки**.
-- Пользователь **может создавать заметку только в существующей категории**.
-- Пользователь **не может создавать категории**.
+1. Клонируйте репозиторий:
+```bash
+git clone https://github.com/Solva-technology/solva-notes-fastapi-W1lden.git
+```
 
-### Администратор:
-- Может видеть, редактировать и удалять **любые заметки и категории**.
-- Может **создавать новые категории**.
-- Имеет доступ ко **всем данным**.
-- Имеет доступ к **админ-панели (SQLAdmin)**, в которой должны быть зарегистрированы все модели.
+2. Создайте .env файл в каталоге src. Вот пример:
+```env_example
+PRODUCTION=False
+APP_TITLE=NoteHub
+DESCRIPTION=NoteHub - проект удобных заметок
+DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/postgres
+SECRET_WORD=t1k5m2uu
+ADMIN=SUPERSECRET
+```
 
----
+3. Соберите и запустите Docker контейнер:
+```bash 
+docker compose up --build -d
+```
 
-## Миграции
-
-- Подключить **Alembic** для создания и применения миграций базы данных.
-
----
-
-## Развёртывание
-
-Приложение должно быть полностью упаковано в **Docker-контейнеры**.
-- Использовать `docker-compose` для запуска БД и API.
-- Прописать зависимости в `requirements.txt`.
+4. В браузере прейдите на сайт документации приложения notes:
+```bash
+http://0.0.0.0:8000/docs
+```
 
 ---
 
-## Документация
+## 🛠️ Запуск админки
 
-- Реализовать автогенерируемую документацию по адресу: `/docs` (Swagger UI).
-- Описать основные эндпоинты и способы работы с API в этом `README.md` (инструкцию по запуску и взаимодействию с API студент пишет самостоятельно).
+1. Создайте админ-пользователя в ручке /auth/register/, например:
+```bash
+{
+  "email": "user@example.com",
+  "password": "string",
+  "is_active": true,
+  "is_superuser": true,
+  "is_verified": true,
+  "is_admin": true
+}
+```
 
+2. Зайдите в админ панель:
+```bash
+http://0.0.0.0:8000/admin/
+```
 ---
 
-## Дополнительно
+## 🌐 Ручки
+- POST /auth/register/ - регистрация пользователя, после создания нужно авторизоваться с помощью кнопки Authorize в правом верхнем углу документации;
+- POST /category/ - создать категорию;
+- GET /category/all - посмотреть все свои категории;
+- GET /category/{id} - посмотреть категорию по id;
+- PATCH /category/{id}/update - обновить категорию по id;
+- DELETE /category/{id} - удалить категорию по id;
+- POST /note/ - создать категорию;
+- GET /note/all - посмотреть все свои заметки;
+- GET /note/{id} - посмотреть заметку по id;
+- PATCH /note/{id}/update - обновить заметку по id;
+- DELETE /note/{id} - удалить заметку по id;
+---
 
-- Все пароли должны храниться в хэшированном виде.
-- Использовать Pydantic-схемы для валидации входных и выходных данных.
-- Использовать зависимости (Depends) для разграничения доступа к данным.
+## 👤 Автор
+
+[W1lden (GitHub)](https://github.com/W1lden)
