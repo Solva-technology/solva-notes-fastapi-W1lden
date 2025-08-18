@@ -1,12 +1,11 @@
 from fastapi import FastAPI
 from sqladmin import Admin
 
-from notes.core.db import engine
 from notes.admin.auth import AdminAuth
+from notes.admin.views import CategoryAdmin, NoteAdmin, UserAdmin
 from notes.api.routers import main_router
 from notes.core.config import settings
-from notes.admin.views import UserAdmin, NoteAdmin, CategoryAdmin
-
+from notes.core.db import engine
 
 app = FastAPI(title=settings.APP_TITLE, description=settings.DESCRIPTION)
 

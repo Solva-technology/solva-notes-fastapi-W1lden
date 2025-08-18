@@ -1,10 +1,10 @@
+from fastapi_users.password import PasswordHelper
 from sqladmin.authentication import AuthenticationBackend
+from sqlalchemy import select
 from starlette.requests import Request
 
 from notes.core.db import AsyncSessionLocal
 from notes.db.models.user import User
-from sqlalchemy import select
-from fastapi_users.password import PasswordHelper
 
 
 class AdminAuth(AuthenticationBackend):

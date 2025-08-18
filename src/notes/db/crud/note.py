@@ -1,50 +1,41 @@
 from fastapi import HTTPException
+from sqlalchemy import delete, insert
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import insert, delete
 
 from notes.db.crud.base import CRUDBase
-from notes.db.models import Note, Category, note_category_association
+from notes.db.models import Category, Note, note_category_association
 
 
 class CRUDNote(CRUDBase):
     async def create_with_categories(
-        self,
-        obj_in: dict,
-        category_ids: list[int] | None,
-        session: AsyncSession
+        self, obj_in: dict, category_ids: list[int] | None, session: AsyncSession
     ):
         note = self.model(**obj_in)
         session.add(note)
         await session.flush()
 
         if category_ids is not None and len(category_ids) > 0:
-            # Получаем id реально существующих категорий
             existing_ids = await session.execute(
                 select(Category.id).where(Category.id.in_(category_ids))
             )
             existing_ids = set(existing_ids.scalars().all())
 
-            # Если что-то не найдено → ошибка
             missing_ids = set(category_ids) - existing_ids
             if missing_ids:
                 raise HTTPException(
                     status_code=404,
-                    detail=f"Категории не найдены: {sorted(missing_ids)}"
+                    detail=f"Категории не найдены: {sorted(missing_ids)}",
                 )
 
             stmt = insert(note_category_association).values(
-                [
-                    {"note_id": note.id, "category_id": cat_id}
-                    for cat_id in category_ids
-                ]
+                [{"note_id": note.id, "category_id": cat_id} for cat_id in category_ids]
             )
             await session.execute(stmt)
 
         await session.commit()
 
-        # Теперь безопасно подгружаем категории
         note_with_categories = await session.execute(
             select(Note)
             .options(selectinload(Note.categories))
@@ -54,23 +45,14 @@ class CRUDNote(CRUDBase):
 
         return note_with_categories
 
-    async def get_multi_filtered(
-            self,
-            session: AsyncSession,
-            user
-    ):
+    async def get_multi_filtered(self, session: AsyncSession, user):
         stmt = select(self.model).options(selectinload(self.model.categories))
         if not user.is_admin:
             stmt = stmt.where(self.model.user_id == user.id)
         result = await session.execute(stmt)
         return result.scalars().all()
 
-    async def get_by_id_filtered(
-            self,
-            note_id: int,
-            session: AsyncSession,
-            user
-    ):
+    async def get_by_id_filtered(self, note_id: int, session: AsyncSession, user):
         stmt = (
             select(self.model)
             .where(self.model.id == note_id)
@@ -82,26 +64,19 @@ class CRUDNote(CRUDBase):
         return result.scalars().first()
 
     async def update_with_categories(
-        self,
-        db_obj: Note,
-        obj_in: dict,
-        session: AsyncSession
+        self, db_obj: Note, obj_in: dict, session: AsyncSession
     ):
-        # Обновляем простые поля
         for field, value in obj_in.items():
             if field != "category_ids" and value is not None:
                 setattr(db_obj, field, value)
 
-        # Если передали категории
         if "category_ids" in obj_in and obj_in["category_ids"] is not None:
-            # Очистим старые связи
             await session.execute(
                 delete(note_category_association).where(
                     note_category_association.c.note_id == db_obj.id
                 )
             )
 
-            # Добавим новые связи
             if obj_in["category_ids"]:
                 existing_ids = await session.execute(
                     select(Category.id).where(Category.id.in_(obj_in["category_ids"]))
@@ -112,7 +87,7 @@ class CRUDNote(CRUDBase):
                 if missing_ids:
                     raise HTTPException(
                         status_code=404,
-                        detail=f"Категории не найдены: {sorted(missing_ids)}"
+                        detail=f"Категории не найдены: {sorted(missing_ids)}",
                     )
 
                 stmt = insert(note_category_association).values(

@@ -1,9 +1,10 @@
 from datetime import datetime
-from typing import Optional, List
+from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
 from notes.core.constants import TITLE_MAX_LEN
+
 from .category import CategoryDB
 
 

@@ -2,24 +2,17 @@ from fastapi import APIRouter, HTTPException, status
 from fastapi.params import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from notes.core.db import get_async_session
-from notes.core.user import is_admin, current_user
+from notes.api.schemas.category import CategoryCreate, CategoryDB, CategoryUpdate
 from notes.api.validators import check_category_exist
+from notes.core.db import get_async_session
+from notes.core.user import current_user, is_admin
 from notes.db.crud.category import category_crud
-from notes.api.schemas.category import (
-    CategoryCreate, CategoryDB, CategoryUpdate
-)
-
 
 router = APIRouter()
 
 
 # POST
-@router.post(
-    '/',
-    response_model=CategoryDB,
-    dependencies=[Depends(is_admin)]
-)
+@router.post("/", response_model=CategoryDB, dependencies=[Depends(is_admin)])
 async def create_new_category(
     new_category: CategoryCreate,
     session: AsyncSession = Depends(get_async_session),
@@ -28,21 +21,14 @@ async def create_new_category(
 
 
 # GET
-@router.get(
-    '/all',
-    response_model=list[CategoryDB]
-
-)
+@router.get("/all", response_model=list[CategoryDB])
 async def get_all_categories(
     session: AsyncSession = Depends(get_async_session),
 ):
     return await category_crud.get_multi(session=session)
 
 
-@router.get(
-    '/{id}',
-    response_model=CategoryDB
-)
+@router.get("/{id}", response_model=CategoryDB)
 async def get_category_by_id(
     id: int,
     session: AsyncSession = Depends(get_async_session),
@@ -51,39 +37,28 @@ async def get_category_by_id(
 
 
 # PATCH
-@router.patch(
-    "/{id}/update",
-    response_model=CategoryDB
-)
+@router.patch("/{id}/update", response_model=CategoryDB)
 async def update_category(
     id: int,
     obj_in: CategoryUpdate,
     session: AsyncSession = Depends(get_async_session),
-    admin=Depends(is_admin)
+    admin=Depends(is_admin),
 ):
     category = await check_category_exist(id, session)
-    return await category_crud.update(
-        db_obj=category,
-        obj_in=obj_in,
-        session=session
-    )
+    return await category_crud.update(db_obj=category, obj_in=obj_in, session=session)
 
 
 # DELETE
-@router.delete(
-    '/{id}',
-    status_code=status.HTTP_204_NO_CONTENT
-)
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_category(
     id: int,
     session: AsyncSession = Depends(get_async_session),
-    user=Depends(current_user)
+    user=Depends(current_user),
 ):
     category = await check_category_exist(category_id=id, session=session)
     if not user.is_admin:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Нужны права администратора"
+            status_code=status.HTTP_403_FORBIDDEN, detail="Нужны права администратора"
         )
 
     await category_crud.delete(category, session)

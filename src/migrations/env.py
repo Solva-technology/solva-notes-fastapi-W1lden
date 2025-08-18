@@ -1,19 +1,17 @@
 import asyncio
 from logging.config import fileConfig
 
+from alembic import context
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-from alembic import context
 from notes.core.base import Base
 from notes.core.config import settings
-
-from notes.db.models import user, note, category  # noqa
-
+from notes.db.models import category, note, user  # noqa
 
 config = context.config
-config.set_main_option('sqlalchemy.url', settings.DATABASE_URL)
+config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
 
 
 if config.config_file_name is not None:
@@ -34,12 +32,12 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    url = config.get_main_option('sqlalchemy.url')
+    url = config.get_main_option("sqlalchemy.url")
     context.configure(
         url=url,
         target_metadata=target_metadata,
         literal_binds=True,
-        dialect_opts={'paramstyle': 'named'},
+        dialect_opts={"paramstyle": "named"},
     )
 
     with context.begin_transaction():
@@ -61,7 +59,7 @@ async def run_async_migrations() -> None:
 
     connectable = async_engine_from_config(
         config.get_section(config.config_ini_section, {}),
-        prefix='sqlalchemy.',
+        prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
 

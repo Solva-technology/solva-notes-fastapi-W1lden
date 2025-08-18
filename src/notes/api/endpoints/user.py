@@ -1,31 +1,28 @@
 from fastapi import APIRouter, Depends
 
-from notes.core.user import auth_backend, fastapi_users, is_admin
 from notes.api.schemas.user import UserCreate, UserRead, UserUpdate
+from notes.core.user import auth_backend, fastapi_users, is_admin
 
 router = APIRouter()
 
 router.include_router(
     fastapi_users.get_auth_router(auth_backend),
-    prefix='/auth/jwt',
-    tags=['auth'],
+    prefix="/auth/jwt",
+    tags=["auth"],
 )
 
 router.include_router(
     fastapi_users.get_register_router(UserRead, UserCreate),
-    prefix='/auth',
-    tags=['auth'],
+    prefix="/auth",
+    tags=["auth"],
 )
 
 users_router = fastapi_users.get_users_router(UserRead, UserUpdate)
 
 users_router.routes = [
-    rout for rout in users_router.routes if rout.name != 'users:delete_user'
+    rout for rout in users_router.routes if rout.name != "users:delete_user"
 ]
 
 router.include_router(
-    users_router,
-    prefix='/users',
-    tags=['users'],
-    dependencies=[Depends(is_admin)]
+    users_router, prefix="/users", tags=["users"], dependencies=[Depends(is_admin)]
 )

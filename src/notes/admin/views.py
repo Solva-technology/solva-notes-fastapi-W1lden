@@ -1,5 +1,6 @@
 from sqladmin import ModelView
-from notes.db.models import User, Note, Category
+
+from notes.db.models import Category, Note, User
 
 
 class UserAdmin(ModelView, model=User):
