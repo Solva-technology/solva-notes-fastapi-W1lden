@@ -34,10 +34,9 @@ async def update_note(
     session: AsyncSession = Depends(get_async_session),
     user=Depends(current_user),
 ):
-    # Проверяем, что заметка существует и принадлежит пользователю (или он админ)
     db_note = await check_note_exist(note_id=id, session=session, user=user)
 
-    obj_in = note_in.dict(exclude_unset=True)  # берем только переданные поля
+    obj_in = note_in.dict(exclude_unset=True)
     return await note_crud.update_with_categories(
         db_obj=db_note, obj_in=obj_in, session=session
     )
