@@ -10,7 +10,10 @@ note_category_association = Table(
     "note_category_association",
     Base.metadata,
     Column(
-        "note_id", Integer, ForeignKey("note.id", ondelete="CASCADE"), primary_key=True
+        "note_id",
+        Integer,
+        ForeignKey("note.id", ondelete="CASCADE"),
+        primary_key=True,
     ),
     Column(
         "category_id",
@@ -25,5 +28,11 @@ class Category(Base):
     name: Mapped[str] = mapped_column(String(TITLE_MAX_LEN), nullable=False)
 
     notes: Mapped[List["Note"]] = relationship(  # noqa
-        "Note", secondary=note_category_association, back_populates="categories"
+        "Note",
+        secondary=note_category_association,
+        back_populates="categories",
+        lazy="selectin",
     )
+
+    def __repr__(self) -> str:
+        return f"<Category(id={self.id}, name={self.name!r})>"

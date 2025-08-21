@@ -18,3 +18,6 @@ class Note(Base):
     categories: Mapped[List["Category"]] = relationship(  # noqa
         "Category", secondary=note_category_association, back_populates="notes"
     )
+
+    def __repr__(self) -> str:
+        return f"<Note(id={self.id}, title={self.title!r}, user_id={self.user_id})>"  # noqa

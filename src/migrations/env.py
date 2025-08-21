@@ -8,7 +8,6 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from notes.core.base import Base
 from notes.core.config import settings
-from notes.db.models import category, note, user  # noqa
 
 config = context.config
 config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)

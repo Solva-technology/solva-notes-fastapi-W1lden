@@ -1,22 +1,16 @@
 from typing import Union
 
 from fastapi import Depends, HTTPException, status
-from fastapi_users import (
-    BaseUserManager,
-    FastAPIUsers,
-    IntegerIDMixin,
-    InvalidPasswordException,
-)
-from fastapi_users.authentication import (
-    AuthenticationBackend,
-    BearerTransport,
-    JWTStrategy,
-)
+from fastapi_users import (BaseUserManager, FastAPIUsers, IntegerIDMixin,
+                           InvalidPasswordException)
+from fastapi_users.authentication import (AuthenticationBackend,
+                                          BearerTransport, JWTStrategy)
 from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from notes.api.schemas.user import UserCreate
 from notes.core.config import settings
+from notes.core.constants import JWT_LIFETIME_SEC, MIN_PASSWORD_LEN
 from notes.core.db import get_async_session
 from notes.db.models import User
 
@@ -29,7 +23,9 @@ bearer_transport = BearerTransport(tokenUrl="auth/jwt/login")
 
 
 def get_jwt_strategy() -> JWTStrategy:
-    return JWTStrategy(secret=settings.SECRET_WORD, lifetime_seconds=3600)
+    return JWTStrategy(
+        secret=settings.SECRET_WORD, lifetime_seconds=JWT_LIFETIME_SEC
+    )
 
 
 auth_backend = AuthenticationBackend(
@@ -41,7 +37,7 @@ class UserManager(IntegerIDMixin, BaseUserManager):
     async def validate_password(
         self, password: str, user: Union[UserCreate, User]
     ) -> None:
-        if len(password) <= 7:
+        if len(password) <= MIN_PASSWORD_LEN:
             raise InvalidPasswordException(
                 reason="Пароль должен соответвовать крутым нормам"
             )

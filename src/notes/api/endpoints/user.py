@@ -24,5 +24,8 @@ users_router.routes = [
 ]
 
 router.include_router(
-    users_router, prefix="/users", tags=["users"], dependencies=[Depends(is_admin)]
+    users_router,
+    prefix="/users",
+    tags=["users"],
+    dependencies=[Depends(is_admin)],
 )

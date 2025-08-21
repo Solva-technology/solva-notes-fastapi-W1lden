@@ -88,7 +88,9 @@ def upgrade() -> None:
         "note_category_association",
         sa.Column("note_id", sa.Integer(), nullable=False),
         sa.Column("category_id", sa.Integer(), nullable=False),
-        sa.ForeignKeyConstraint(["category_id"], ["category.id"], ondelete="CASCADE"),
+        sa.ForeignKeyConstraint(
+            ["category_id"], ["category.id"], ondelete="CASCADE"
+        ),
         sa.ForeignKeyConstraint(["note_id"], ["note.id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("note_id", "category_id"),
     )

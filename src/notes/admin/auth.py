@@ -13,7 +13,9 @@ class AdminAuth(AuthenticationBackend):
         email, password = form["username"], form["password"]
 
         async with AsyncSessionLocal() as session:
-            user = await session.scalar(select(User).where(User.email == email))
+            user = await session.scalar(
+                select(User).where(User.email == email)
+            )
 
         if not user or not user.is_admin:
             return False

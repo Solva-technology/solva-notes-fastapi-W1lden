@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    APP_TITLE: str
+    APP_TITLE: str = "NoteHub"
     DESCRIPTION: str
 
     SECRET_WORD: str = "SECRET"
@@ -11,7 +11,7 @@ class Settings(BaseSettings):
 
     ADMIN: str
 
-    model_config = SettingsConfigDict(env_file=".env")
+    model_config = SettingsConfigDict(env_file=".env", extra="allow")
 
 
 settings = Settings()

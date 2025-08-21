@@ -16,7 +16,8 @@ async def check_note_exist(note_id: int, session: AsyncSession, user):
 
     if (not user.is_admin) and (note.user_id != user.id):
         raise HTTPException(
-            status_code=HTTPStatus.FORBIDDEN, detail="Нет доступа к этой заметке"
+            status_code=HTTPStatus.FORBIDDEN,
+            detail="Нет доступа к этой заметке",
         )
 
     return note
