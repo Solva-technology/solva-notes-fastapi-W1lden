@@ -145,3 +145,6 @@ class CRUDNote(CRUDBase[ModelType]):
             .where(Note.id == db_obj.id)
         )
         return note_with_categories.scalars().first()
+
+
+note_crud = CRUDNote(Note)
